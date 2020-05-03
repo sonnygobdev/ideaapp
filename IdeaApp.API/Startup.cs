@@ -14,6 +14,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using IdeaApp.API.Dtos;
+using IdeaApp.API.Validators;
 
 namespace IdeaApp.API
 {
@@ -30,9 +34,12 @@ namespace IdeaApp.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation();
             services.AddCors();
             services.AddScoped<IAuthService,AuthService>();
+            services.AddScoped<IValidator<UserForRegisterDto>,UserValidator>();
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
