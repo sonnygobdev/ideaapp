@@ -8,5 +8,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2"/>
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.2"/>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.5.1"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.1"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2"/>
   </ItemGroup>
 </Project>

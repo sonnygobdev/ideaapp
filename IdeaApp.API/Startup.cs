@@ -18,6 +18,9 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using IdeaApp.API.Dtos;
 using IdeaApp.API.Validators;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace IdeaApp.API
 {
@@ -33,11 +36,24 @@ namespace IdeaApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var base64Encoding = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value));
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers().AddFluentValidation();
             services.AddCors();
             services.AddScoped<IAuthService,AuthService>();
             services.AddScoped<IValidator<UserForRegisterDto>,UserValidator>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(_=>{
+                        _.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.ASCII.GetBytes(base64Encoding)),
+                            ValidateIssuer = false,
+                            ValidateAudience = false
+                            
+                        };
+                    });
 
             
         }
@@ -55,6 +71,8 @@ namespace IdeaApp.API
             app.UseRouting();
 
             app.UseCors(_=>_.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
