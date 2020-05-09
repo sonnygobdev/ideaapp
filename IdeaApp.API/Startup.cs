@@ -36,15 +36,16 @@ namespace IdeaApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var base64Encoding = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value));
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers().AddFluentValidation();
+            services.AddControllers().AddFluentValidation(
+                _=>_.RegisterValidatorsFromAssemblyContaining<UserValidator>());
             services.AddCors();
             services.AddScoped<IAuthService,AuthService>();
-            services.AddScoped<IValidator<UserForRegisterDto>,UserValidator>();
+           // services.AddScoped<IValidator<UserForRegisterDto>,UserValidator>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(_=>{
-                        _.TokenValidationParameters = new TokenValidationParameters
+                          var base64Encoding = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value));
+                         _.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuerSigningKey = true,
                             IssuerSigningKey = new SymmetricSecurityKey(
